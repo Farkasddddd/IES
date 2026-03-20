@@ -29,10 +29,36 @@
 
 这样做的目的，是先让统一策略在“已经比较清楚的局部容量邻域”里学习，而不是一下子铺到很大的容量空间。
 
+## 留出测试池
+
+为了避免只在训练池里自我验证，另外准备了一组留出容量点：
+
+- `RL_test_hierarchical_control/config/stage4_holdout_pool.json`
+
+这些点不放入默认训练池，主要用于后续检验：
+
+- 统一策略在邻域内插值时是否稳定
+- 对未直接见过的容量点是否还能保持零越界或低越界
+- 性能是否明显劣化
+
 ## 训练命令
 
 ```powershell
 E:\anaconda\python.exe RL_test_hierarchical_control\train\train_sac_capacity_conditioned.py --timesteps 60000 --episode-horizon 168 --pool-path RL_test_hierarchical_control\config\stage4_conditioned_pool.json
+```
+
+## 评估命令
+
+### 评估训练池内配置
+
+```powershell
+E:\anaconda\python.exe RL_test_hierarchical_control\train\evaluate_capacity_conditioned.py --pool-path RL_test_hierarchical_control\config\stage4_conditioned_pool.json --episode-horizon 8760
+```
+
+### 评估留出容量点
+
+```powershell
+E:\anaconda\python.exe RL_test_hierarchical_control\train\evaluate_capacity_conditioned.py --pool-path RL_test_hierarchical_control\config\stage4_holdout_pool.json --episode-horizon 8760
 ```
 
 ## 当前定位
@@ -61,3 +87,10 @@ E:\anaconda\python.exe RL_test_hierarchical_control\train\train_sac_capacity_con
 - 多配置采样训练环境可正常 reset 和切换配置
 - SAC 可以在该环境上正常启动训练
 - 元数据、模型和 checkpoint 可以正常落盘
+
+统一评估脚本已经补齐，后续可以直接输出：
+
+- 训练池内配置汇总
+- 留出配置汇总
+- 每个配置的年度评估文件
+- 汇总 `csv/json/md`
