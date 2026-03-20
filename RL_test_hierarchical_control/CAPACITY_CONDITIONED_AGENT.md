@@ -94,3 +94,52 @@ E:\anaconda\python.exe RL_test_hierarchical_control\train\evaluate_capacity_cond
 - 留出配置汇总
 - 每个配置的年度评估文件
 - 汇总 `csv/json/md`
+
+## 当前阶段结果更新
+
+### 1. 冒烟模型双池评估
+
+基于 `smoke` 模型，已经完成：
+
+- 训练池内短周期评估：
+  `RL_test_hierarchical_control/results/stage4_conditioned/evaluations/stage4_eval_in_pool_smoke_20260320_231456/`
+- 留出池短周期评估：
+  `RL_test_hierarchical_control/results/stage4_conditioned/evaluations/stage4_eval_holdout_smoke_20260320_231456/`
+
+结果说明：
+
+- 训练池内和留出池都能正常完成汇总
+- 两边 `H2/CO2/SOC` 越界都为 `0`
+- 但这只是链路验证，策略质量几乎没有参考价值
+
+### 2. `pilot5k` 小规模统一训练
+
+基于默认训练池，已经跑完一轮更像样的小规模训练：
+
+- 训练目录：
+  `RL_test_hierarchical_control/results/stage4_conditioned/training_runs/stage4_conditioned_pilot5k_20260320_231617/`
+- 训练步数：`5000`
+- episode 长度：`168`
+- 设备：`cuda`
+
+训练过程中，episode reward 已经从明显负值爬升到正区间，说明统一策略至少开始学到某种有约束的运行偏好。
+
+### 3. `pilot5k` 双池评估初步结论
+
+对应评估结果在：
+
+- 训练池内：
+  `RL_test_hierarchical_control/results/stage4_conditioned/evaluations/stage4_eval_in_pool_pilot5k_20260320_231735/`
+- 留出池：
+  `RL_test_hierarchical_control/results/stage4_conditioned/evaluations/stage4_eval_holdout_pilot5k_20260320_231735/`
+
+当前最重要的结论有两条：
+
+- 训练池内和留出池在短周期下都保持 `H2/CO2/SOC` 零越界
+- 两边平均表现接近，说明在当前这个很小的容量邻域里，统一策略已经出现了早期的“配置感知而非只记住单点”的迹象
+
+但同样要明确：
+
+- 这还只是 `5000` 步的小规模训练
+- 当前产量和 `LCOM` 还远不能和单配置精调策略相比
+- 现在最多只能说“统一策略链路已经打通，并出现了早期泛化迹象”，不能说阶段 4 已经完成
