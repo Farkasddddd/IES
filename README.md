@@ -32,6 +32,8 @@
   Git 提交、推送和云端备份说明
 - `RL_test_hierarchical_control/STAGE1_STANDARDIZATION.md`
   第一阶段标准化接口说明
+- `RL_test_hierarchical_control/CAPACITY_CONDITIONED_AGENT.md`
+  统一容量条件策略的脚手架说明
 
 ## 当前研究结论入口
 

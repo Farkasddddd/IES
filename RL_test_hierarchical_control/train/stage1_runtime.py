@@ -18,6 +18,7 @@ if WORKSPACE_ROOT not in sys.path:
     sys.path.insert(0, WORKSPACE_ROOT)
 
 from env.ies_bilevel_env_hierarchical import IESBilevelEnv
+from env.capacity_conditioned_stage1_env import CapacityConditionedStage1Env
 
 
 def resolve_device(device: str = "auto") -> str:
@@ -46,6 +47,41 @@ def build_stage1_env(
         episode_horizon=episode_horizon,
         random_start=random_start,
         safety_profile=safety_profile,
+    )
+    if seed is not None:
+        raw_env.reset(seed=seed)
+
+    wrapped_env = raw_env
+    if symmetric_actions:
+        wrapped_env = RescaleAction(wrapped_env, min_action=-1.0, max_action=1.0)
+    if monitor_dir is not None:
+        wrapped_env = Monitor(wrapped_env, monitor_dir)
+    return raw_env, wrapped_env
+
+
+def build_conditioned_stage1_env(
+    *,
+    pv_data_path: str,
+    surrogate_path: str,
+    config_labels,
+    config_pool,
+    episode_horizon: int,
+    random_start: bool,
+    safety_profile: str = "baseline",
+    sample_mode: str = "random",
+    symmetric_actions: bool = True,
+    monitor_dir: str | None = None,
+    seed: int | None = None,
+):
+    raw_env = CapacityConditionedStage1Env(
+        pv_data_path=pv_data_path,
+        surrogate_path=surrogate_path,
+        config_pool=config_pool,
+        config_labels=config_labels,
+        episode_horizon=episode_horizon,
+        random_start=random_start,
+        safety_profile=safety_profile,
+        sample_mode=sample_mode,
     )
     if seed is not None:
         raw_env.reset(seed=seed)

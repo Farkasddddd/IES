@@ -1,0 +1,80 @@
+{
+  "sample_mode": "random",
+  "configs": [
+    {
+      "label": "baseline",
+      "config": {
+        "pv_ref_kw": 1000.0,
+        "pv_scale": 1.0,
+        "r_dac": 600.0,
+        "r_pem": 0.4,
+        "r_bat_e": 2.0,
+        "r_bat_p": 1.0,
+        "r_h2": 45.8,
+        "r_co2": 92.6,
+        "r_meoh": 1.0,
+        "mode": "grid"
+      }
+    },
+    {
+      "label": "h2_55",
+      "config": {
+        "pv_ref_kw": 1000.0,
+        "pv_scale": 1.0,
+        "r_dac": 600.0,
+        "r_pem": 0.4,
+        "r_bat_e": 2.0,
+        "r_bat_p": 1.0,
+        "r_h2": 55.0,
+        "r_co2": 92.6,
+        "r_meoh": 1.0,
+        "mode": "grid"
+      }
+    },
+    {
+      "label": "h2_60",
+      "config": {
+        "pv_ref_kw": 1000.0,
+        "pv_scale": 1.0,
+        "r_dac": 600.0,
+        "r_pem": 0.4,
+        "r_bat_e": 2.0,
+        "r_bat_p": 1.0,
+        "r_h2": 60.0,
+        "r_co2": 92.6,
+        "r_meoh": 1.0,
+        "mode": "grid"
+      }
+    },
+    {
+      "label": "bat_e_30",
+      "config": {
+        "pv_ref_kw": 1000.0,
+        "pv_scale": 1.0,
+        "r_dac": 600.0,
+        "r_pem": 0.4,
+        "r_bat_e": 3.0,
+        "r_bat_p": 1.0,
+        "r_h2": 45.8,
+        "r_co2": 92.6,
+        "r_meoh": 1.0,
+        "mode": "grid"
+      }
+    },
+    {
+      "label": "bat_e_35",
+      "config": {
+        "pv_ref_kw": 1000.0,
+        "pv_scale": 1.0,
+        "r_dac": 600.0,
+        "r_pem": 0.4,
+        "r_bat_e": 3.5,
+        "r_bat_p": 1.0,
+        "r_h2": 45.8,
+        "r_co2": 92.6,
+        "r_meoh": 1.0,
+        "mode": "grid"
+      }
+    }
+  ]
+}
