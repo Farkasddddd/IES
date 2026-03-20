@@ -34,6 +34,8 @@
   第一阶段标准化接口说明
 - `RL_test_hierarchical_control/CAPACITY_CONDITIONED_AGENT.md`
   统一容量条件策略的脚手架说明
+- `project_metadata/update_history/README.md`
+  项目更新记录数据库说明
 
 ## 当前研究结论入口
 
