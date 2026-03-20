@@ -1,25 +1,34 @@
 # 统一容量条件策略说明
 
-## 目的
+## 目标
 
-这一部分对应项目的阶段 4 预备工作，目标不是立刻宣称“一个策略适配一切容量”，而是先建立一个统一训练入口，让策略能够在预先定义的容量范围内学习“看到配置后再决定行为”。
+这一部分对应项目的阶段 4 预备工作。目标不是宣称“一个策略适配一切容量”，而是先训练一个能够读取容量配置上下文、并在预定义容量范围内自动调整行为的统一策略。
+
+更准确地说，这里要验证的是：
+
+- 同一个策略能否在一组相近但不同的容量配置上稳定运行
+- 在训练池内外，策略是否都能保持零越界或近零越界
+- 性能是否能逐步逼近单配置精调策略
 
 ## 当前实现范围
 
-目前只完成训练脚手架，不做大规模正式实验结论：
+目前已经具备以下基础能力：
 
-- 保留现有 `stage1` 标准化环境
-- 每个 episode 开始时，从一个容量池里采样配置
-- observation 中继续包含配置态
-- 动作接口仍然沿用 `stage1`
+- 复用现有 `stage1` 标准化环境接口
+- 每个 episode 开始时，从容量池中采样一个配置
+- observation 中保留配置态输入
+- 动作接口继续沿用 `stage1`
+- 支持从已有统一策略继续 warm-start 微调
+- 支持训练池和留出池的批量评估
+- 支持和单配置专用策略做同口径对照
 
-## 默认容量池
+## 训练池与留出池
 
-默认训练池位于：
+默认训练池在：
 
 - `RL_test_hierarchical_control/config/stage4_conditioned_pool.json`
 
-当前先放入一小组已经在阶段 2 和阶段 3 中验证过、有代表性的容量点：
+当前训练池包含 5 个代表性容量点：
 
 - `baseline`
 - `h2_55`
@@ -27,119 +36,150 @@
 - `bat_e_30`
 - `bat_e_35`
 
-这样做的目的，是先让统一策略在“已经比较清楚的局部容量邻域”里学习，而不是一下子铺到很大的容量空间。
-
-## 留出测试池
-
-为了避免只在训练池里自我验证，另外准备了一组留出容量点：
+默认留出池在：
 
 - `RL_test_hierarchical_control/config/stage4_holdout_pool.json`
 
-这些点不放入默认训练池，主要用于后续检验：
+留出池用于检查统一策略在训练池外附近容量点上的稳定性与性能退化情况。
 
-- 统一策略在邻域内插值时是否稳定
-- 对未直接见过的容量点是否还能保持零越界或低越界
-- 性能是否明显劣化
+## 主要脚本
 
-## 训练命令
+训练统一策略：
 
 ```powershell
 E:\anaconda\python.exe RL_test_hierarchical_control\train\train_sac_capacity_conditioned.py --timesteps 60000 --episode-horizon 168 --pool-path RL_test_hierarchical_control\config\stage4_conditioned_pool.json
 ```
 
-## 评估命令
-
-### 评估训练池内配置
+评估训练池：
 
 ```powershell
-E:\anaconda\python.exe RL_test_hierarchical_control\train\evaluate_capacity_conditioned.py --pool-path RL_test_hierarchical_control\config\stage4_conditioned_pool.json --episode-horizon 8760
+E:\anaconda\python.exe RL_test_hierarchical_control\train\evaluate_capacity_conditioned.py --pool-path RL_test_hierarchical_control\config\stage4_conditioned_pool.json --episode-horizon 168
 ```
 
-### 评估留出容量点
+评估留出池：
 
 ```powershell
-E:\anaconda\python.exe RL_test_hierarchical_control\train\evaluate_capacity_conditioned.py --pool-path RL_test_hierarchical_control\config\stage4_holdout_pool.json --episode-horizon 8760
+E:\anaconda\python.exe RL_test_hierarchical_control\train\evaluate_capacity_conditioned.py --pool-path RL_test_hierarchical_control\config\stage4_holdout_pool.json --episode-horizon 168
 ```
 
-## 当前定位
+分析统一策略与单配置专用策略的差距：
 
-这一步是工程准备，不是最终论文结论。真正要回答“统一策略是否具备有意义的容量泛化能力”，还需要后续做：
-
-- 训练分布内测试
-- 留出容量点测试
-- 和单配置微调策略对比
-- 策略特征随配置变化的解释分析
+```powershell
+E:\anaconda\python.exe RL_test_hierarchical_control\train\analyze_capacity_conditioned_progress.py --conditioned-in-pool <训练池汇总json> --conditioned-holdout <留出池汇总json> --run-tag <标签>
+```
 
 ## 当前验证记录
 
-当前已经完成一轮极短的冒烟训练，用来确认链路可运行：
+### 1. smoke 冒烟链路
 
-- 运行标签：`smoke`
-- 配置池大小：`5`
+最早先做了一轮极短的冒烟训练，用于确认多配置采样、统一训练入口、模型保存和评估链路全部打通：
+
+- 运行目录：
+  `RL_test_hierarchical_control/results/stage4_conditioned/training_runs/stage4_conditioned_smoke_20260320_230202/`
 - 训练步数：`200`
 - episode 长度：`48`
 - 设备：`cuda`
-- 结果目录：
-  `RL_test_hierarchical_control/results/stage4_conditioned/training_runs/stage4_conditioned_smoke_20260320_230202/`
 
-这轮不用于评价策略质量，只用于确认以下内容已经打通：
+这一步只验证链路，不用于性能判断。
 
-- 多配置采样训练环境可正常 reset 和切换配置
-- SAC 可以在该环境上正常启动训练
-- 元数据、模型和 checkpoint 可以正常落盘
+### 2. pilot5k
 
-统一评估脚本已经补齐，后续可以直接输出：
+第一轮小规模统一训练：
 
-- 训练池内配置汇总
-- 留出配置汇总
-- 每个配置的年度评估文件
-- 汇总 `csv/json/md`
-
-## 当前阶段结果更新
-
-### 1. 冒烟模型双池评估
-
-基于 `smoke` 模型，已经完成：
-
-- 训练池内短周期评估：
-  `RL_test_hierarchical_control/results/stage4_conditioned/evaluations/stage4_eval_in_pool_smoke_20260320_231456/`
-- 留出池短周期评估：
-  `RL_test_hierarchical_control/results/stage4_conditioned/evaluations/stage4_eval_holdout_smoke_20260320_231456/`
-
-结果说明：
-
-- 训练池内和留出池都能正常完成汇总
-- 两边 `H2/CO2/SOC` 越界都为 `0`
-- 但这只是链路验证，策略质量几乎没有参考价值
-
-### 2. `pilot5k` 小规模统一训练
-
-基于默认训练池，已经跑完一轮更像样的小规模训练：
-
-- 训练目录：
+- 运行目录：
   `RL_test_hierarchical_control/results/stage4_conditioned/training_runs/stage4_conditioned_pilot5k_20260320_231617/`
 - 训练步数：`5000`
 - episode 长度：`168`
 - 设备：`cuda`
 
-训练过程中，episode reward 已经从明显负值爬升到正区间，说明统一策略至少开始学到某种有约束的运行偏好。
+对应双池评估：
 
-### 3. `pilot5k` 双池评估初步结论
-
-对应评估结果在：
-
-- 训练池内：
+- 训练池：
   `RL_test_hierarchical_control/results/stage4_conditioned/evaluations/stage4_eval_in_pool_pilot5k_20260320_231735/`
 - 留出池：
   `RL_test_hierarchical_control/results/stage4_conditioned/evaluations/stage4_eval_holdout_pilot5k_20260320_231735/`
 
-当前最重要的结论有两条：
+主要现象：
 
-- 训练池内和留出池在短周期下都保持 `H2/CO2/SOC` 零越界
-- 两边平均表现接近，说明在当前这个很小的容量邻域里，统一策略已经出现了早期的“配置感知而非只记住单点”的迹象
+- 训练池和留出池都保持 `H2/CO2/SOC = 0` 越界
+- 训练池与留出池均值已经比较接近，出现早期局部泛化信号
+- 但和单配置专用策略相比，仍有明显性能差距
 
-但同样要明确：
+### 3. pilot20k_ft
 
-- 这还只是 `5000` 步的小规模训练
-- 当前产量和 `LCOM` 还远不能和单配置精调策略相比
-- 现在最多只能说“统一策略链路已经打通，并出现了早期泛化迹象”，不能说阶段 4 已经完成
+第二轮从 `pilot5k` 继续 warm-start：
+
+- 运行目录：
+  `RL_test_hierarchical_control/results/stage4_conditioned/training_runs/stage4_conditioned_pilot20k_ft_20260320_233319/`
+
+对应双池评估：
+
+- 训练池均值：甲醇 `2792.77 kg`，`LCOM 418.6589`
+- 留出池均值：甲醇 `2786.28 kg`，`LCOM 417.1475`
+- 三类越界仍为 `0`
+
+这一轮最重要的进步是：
+
+- `h2_55` 这个关键容量点上，统一策略与专用策略的差距明显缩小
+- 留出池和训练池的差值依然很小，说明训练更久后没有明显破坏局部泛化
+
+### 4. pilot60k_ft
+
+第三轮从 `pilot20k_ft` 继续 warm-start 到更接近正式规模：
+
+- 运行目录：
+  `RL_test_hierarchical_control/results/stage4_conditioned/training_runs/stage4_conditioned_pilot60k_ft_20260320_234109/`
+- 追加训练步数：`40000`
+- 本轮训练结束时 `ep_rew_mean` 大约提升到 `2.15e4`
+
+对应双池评估：
+
+- 训练池：
+  `RL_test_hierarchical_control/results/stage4_conditioned/evaluations/stage4_eval_pilot60k_ft_in_pool_20260320_235128/`
+- 留出池：
+  `RL_test_hierarchical_control/results/stage4_conditioned/evaluations/stage4_eval_pilot60k_ft_holdout_20260320_235128/`
+- 对照分析：
+  `RL_test_hierarchical_control/results/stage4_conditioned/analysis/conditioned_vs_specialized_pilot60k_ft_20260320_235148/`
+
+本轮结果：
+
+- 训练池均值：甲醇 `2788.99 kg`，`LCOM 419.1223`
+- 留出池均值：甲醇 `2775.26 kg`，`LCOM 418.8289`
+- 训练池和留出池三类越界仍全部为 `0`
+- 训练池与留出池的均值差仍然很小，说明局部泛化信号还在
+
+与单配置专用策略对照后的结论：
+
+- `baseline`：统一策略仍落后于专用策略
+- `h2_55`：统一策略仍落后，但差距没有消失
+- `bat_e_35`：统一策略已经非常接近专用策略
+
+## 当前判断
+
+目前可以确认 3 件事：
+
+1. 统一容量条件策略链路已经打通，并且能够稳定训练
+2. 在当前这组上海基准附近容量点上，统一策略已经表现出局部泛化能力
+3. 统一策略仍未全面追平单配置专用策略，尤其在 `baseline` 和 `h2_55` 这两个点上还有差距
+
+同时也出现了一个很重要的现象：
+
+- 从 `pilot20k_ft` 继续训练到 `pilot60k_ft` 后，训练 reward 继续上涨
+- 但池内均值和部分关键点对照并没有同步单调改善
+
+这说明阶段 4 后面不能只盯训练 reward，还需要更明确地做模型选择，例如同时参考：
+
+- 训练池均值
+- 留出池均值
+- 与专用策略的差距
+- 全年零越界约束
+
+## 当前阶段结论
+
+统一策略已经从“只有脚手架”推进到了“有局部泛化信号、且可稳定零越界运行”的状态，但还不能宣布完成阶段 4。
+
+更准确的结论是：
+
+- 阶段 4 已经具备继续推进的工程基础
+- 当前最好把它视作“统一策略原型”而不是正式替代专用策略的最终模型
+- 后续需要继续做更严谨的模型选择、留出验证和年度长周期验证

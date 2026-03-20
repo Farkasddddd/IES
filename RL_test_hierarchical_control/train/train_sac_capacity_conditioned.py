@@ -33,6 +33,7 @@ def main():
     parser = argparse.ArgumentParser(description="Train a capacity-conditioned SAC policy on the standardized stage-1 interface.")
     parser.add_argument("--pool-path", type=str, default=None)
     parser.add_argument("--run-tag", type=str, default="conditioned_pool")
+    parser.add_argument("--init-model-path", type=str, default=None)
     parser.add_argument("--timesteps", type=int, default=60_000)
     parser.add_argument("--episode-horizon", type=int, default=168)
     parser.add_argument("--seed", type=int, default=20260320)
@@ -69,23 +70,32 @@ def main():
     device = resolve_device(args.device)
     tensorboard_dir = os.path.join(run_dir, "tensorboard")
 
-    model = SAC(
-        "MlpPolicy",
-        env,
-        verbose=1,
-        learning_rate=args.learning_rate,
-        batch_size=args.batch_size,
-        learning_starts=args.learning_starts,
-        seed=args.seed,
-        device=device,
-        tensorboard_log=tensorboard_dir,
-    )
+    if args.init_model_path:
+        model = SAC.load(args.init_model_path, env=env, device=device)
+        model.tensorboard_log = tensorboard_dir
+        model.verbose = 1
+        training_mode = "finetune_capacity_conditioned"
+        reset_num_timesteps = False
+    else:
+        model = SAC(
+            "MlpPolicy",
+            env,
+            verbose=1,
+            learning_rate=args.learning_rate,
+            batch_size=args.batch_size,
+            learning_starts=args.learning_starts,
+            seed=args.seed,
+            device=device,
+            tensorboard_log=tensorboard_dir,
+        )
+        training_mode = "scratch_capacity_conditioned"
+        reset_num_timesteps = True
     checkpoint_callback = build_checkpoint_callback(run_dir=run_dir, save_freq=args.save_freq)
     model.learn(
         total_timesteps=args.timesteps,
         progress_bar=True,
         callback=checkpoint_callback,
-        reset_num_timesteps=True,
+        reset_num_timesteps=reset_num_timesteps,
     )
 
     model_path = os.path.join(run_dir, "models", "policy_capacity_conditioned_stage1")
@@ -102,7 +112,8 @@ def main():
         "episode_horizon": args.episode_horizon,
         "seed": args.seed,
         "interface_mode": "stage1",
-        "training_mode": "scratch_capacity_conditioned",
+        "training_mode": training_mode,
+        "init_model_path": args.init_model_path,
         "safety_profile": args.safety_profile,
         "device_requested": args.device,
         "device_resolved": device,
