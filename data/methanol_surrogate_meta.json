@@ -1,0 +1,12 @@
+{
+  "input_cols": [
+    "Feed_CO2_mol_s",
+    "Feed_Ratio_H2_CO2"
+  ],
+  "output_cols": [
+    "Methanol_Production_kg_h",
+    "Total_COMP_Power_kW"
+  ],
+  "best_val_loss": 0.0027318820357322693,
+  "n_samples": 964
+}

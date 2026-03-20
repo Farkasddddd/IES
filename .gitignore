@@ -1,0 +1,54 @@
+# Python caches
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+.env/
+conda-meta/
+
+# Tooling caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# TensorBoard and training scratch
+sac_tensorboard/
+**/tensorboard/
+**/checkpoints/
+**/monitor.csv
+
+# Large model artifacts
+/models/
+*.zip
+
+# Root-level experiment outputs
+/results/
+
+# Project experiment outputs
+RL_capacity_optimization/results/
+RL_test_fixed_config/results/
+
+# Keep curated stage archives, ignore bulky run outputs by default
+RL_test_hierarchical_control/results/*
+!RL_test_hierarchical_control/results/stage1/
+RL_test_hierarchical_control/results/stage1/*
+!RL_test_hierarchical_control/results/stage1/stage_archives/
+!RL_test_hierarchical_control/results/stage1/stage_archives/**
+!RL_test_hierarchical_control/results/stage1/latest_model/
+!RL_test_hierarchical_control/results/stage1/latest_model/latest_stage1_model.json
+RL_test_hierarchical_control/results/stage1/training_runs/
+RL_test_hierarchical_control/results/stage1/evaluations/
+RL_test_hierarchical_control/results/stage1/scans/
+
+# Generated local metadata
+*.log

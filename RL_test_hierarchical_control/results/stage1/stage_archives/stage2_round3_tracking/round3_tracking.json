@@ -1,0 +1,46 @@
+[
+  {
+    "config_key": "r_bat_e_25",
+    "screen_lcom": 9.507979392793489,
+    "screen_methanol": 123192.24438476562,
+    "screen_h2_viol": 0,
+    "promote_lcom": null,
+    "promote_methanol": null,
+    "promote_h2_viol": null,
+    "delta_lcom_promote_minus_screen": null,
+    "delta_methanol_promote_minus_screen": null
+  },
+  {
+    "config_key": "r_bat_e_35",
+    "screen_lcom": 9.037734173615691,
+    "screen_methanol": 142724.45733642578,
+    "screen_h2_viol": 0,
+    "promote_lcom": 8.88296739202907,
+    "promote_methanol": 149919.4103088379,
+    "promote_h2_viol": 0,
+    "delta_lcom_promote_minus_screen": -0.1547667815866216,
+    "delta_methanol_promote_minus_screen": 7194.952972412109
+  },
+  {
+    "config_key": "r_h2_55",
+    "screen_lcom": 7.799906014309635,
+    "screen_methanol": 146834.93258666992,
+    "screen_h2_viol": 0,
+    "promote_lcom": 7.736896949346645,
+    "promote_methanol": 146729.13342285156,
+    "promote_h2_viol": 0,
+    "delta_lcom_promote_minus_screen": -0.06300906496299064,
+    "delta_methanol_promote_minus_screen": -105.79916381835938
+  },
+  {
+    "config_key": "r_h2_70",
+    "screen_lcom": 8.013594220802029,
+    "screen_methanol": 144520.5061340332,
+    "screen_h2_viol": 0,
+    "promote_lcom": null,
+    "promote_methanol": null,
+    "promote_h2_viol": null,
+    "delta_lcom_promote_minus_screen": null,
+    "delta_methanol_promote_minus_screen": null
+  }
+]

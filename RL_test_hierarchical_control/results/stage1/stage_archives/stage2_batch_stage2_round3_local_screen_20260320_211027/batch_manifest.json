@@ -1,0 +1,48 @@
+{
+  "run_id": "stage2_batch_stage2_round3_local_screen_20260320_211027",
+  "phase": "screen",
+  "timesteps": 2000,
+  "config_dir": "C:\\Users\\Farkas\\Desktop\\IES\\RL_test_hierarchical_control\\config\\stage2_round3_local_search",
+  "init_model_path": "C:\\Users\\Farkas\\Desktop\\IES\\RL_test_hierarchical_control\\results\\stage1\\training_runs\\stage1_train_shanghai_baseline_20260320_200229\\models\\policy_stage1_standardized",
+  "episode_horizon": 168,
+  "eval_horizon": 8760,
+  "seed": 20260320,
+  "device": "auto",
+  "safety_profile": "h2_guard_v1",
+  "symmetric_actions": true,
+  "configs": [
+    "C:\\Users\\Farkas\\Desktop\\IES\\RL_test_hierarchical_control\\config\\stage2_round3_local_search\\r_bat_e_25.json",
+    "C:\\Users\\Farkas\\Desktop\\IES\\RL_test_hierarchical_control\\config\\stage2_round3_local_search\\r_bat_e_35.json",
+    "C:\\Users\\Farkas\\Desktop\\IES\\RL_test_hierarchical_control\\config\\stage2_round3_local_search\\r_h2_55.json",
+    "C:\\Users\\Farkas\\Desktop\\IES\\RL_test_hierarchical_control\\config\\stage2_round3_local_search\\r_h2_70.json"
+  ],
+  "completed": [
+    {
+      "config_key": "r_bat_e_25",
+      "config_path": "C:\\Users\\Farkas\\Desktop\\IES\\RL_test_hierarchical_control\\config\\stage2_round3_local_search\\r_bat_e_25.json",
+      "train_run_dir": "C:\\Users\\Farkas\\Desktop\\IES\\RL_test_hierarchical_control\\results\\stage1\\training_runs\\stage1_train_stage2_round3_local_screen_r_bat_e_25_20260320_211029",
+      "eval_run_dir": "C:\\Users\\Farkas\\Desktop\\IES\\RL_test_hierarchical_control\\results\\stage1\\evaluations\\stage1_eval_stage2_round3_local_screen_r_bat_e_25_20260320_211117"
+    },
+    {
+      "config_key": "r_bat_e_35",
+      "config_path": "C:\\Users\\Farkas\\Desktop\\IES\\RL_test_hierarchical_control\\config\\stage2_round3_local_search\\r_bat_e_35.json",
+      "train_run_dir": "C:\\Users\\Farkas\\Desktop\\IES\\RL_test_hierarchical_control\\results\\stage1\\training_runs\\stage1_train_stage2_round3_local_screen_r_bat_e_35_20260320_211120",
+      "eval_run_dir": "C:\\Users\\Farkas\\Desktop\\IES\\RL_test_hierarchical_control\\results\\stage1\\evaluations\\stage1_eval_stage2_round3_local_screen_r_bat_e_35_20260320_211209"
+    },
+    {
+      "config_key": "r_h2_55",
+      "config_path": "C:\\Users\\Farkas\\Desktop\\IES\\RL_test_hierarchical_control\\config\\stage2_round3_local_search\\r_h2_55.json",
+      "train_run_dir": "C:\\Users\\Farkas\\Desktop\\IES\\RL_test_hierarchical_control\\results\\stage1\\training_runs\\stage1_train_stage2_round3_local_screen_r_h2_55_20260320_211213",
+      "eval_run_dir": "C:\\Users\\Farkas\\Desktop\\IES\\RL_test_hierarchical_control\\results\\stage1\\evaluations\\stage1_eval_stage2_round3_local_screen_r_h2_55_20260320_211306"
+    },
+    {
+      "config_key": "r_h2_70",
+      "config_path": "C:\\Users\\Farkas\\Desktop\\IES\\RL_test_hierarchical_control\\config\\stage2_round3_local_search\\r_h2_70.json",
+      "train_run_dir": "C:\\Users\\Farkas\\Desktop\\IES\\RL_test_hierarchical_control\\results\\stage1\\training_runs\\stage1_train_stage2_round3_local_screen_r_h2_70_20260320_211310",
+      "eval_run_dir": "C:\\Users\\Farkas\\Desktop\\IES\\RL_test_hierarchical_control\\results\\stage1\\evaluations\\stage1_eval_stage2_round3_local_screen_r_h2_70_20260320_211359"
+    }
+  ],
+  "saved_csv": "C:\\Users\\Farkas\\Desktop\\IES\\RL_test_hierarchical_control\\results\\stage1\\stage_archives\\stage2_batch_stage2_round3_local_screen_20260320_211027\\batch_summary.csv",
+  "saved_json": "C:\\Users\\Farkas\\Desktop\\IES\\RL_test_hierarchical_control\\results\\stage1\\stage_archives\\stage2_batch_stage2_round3_local_screen_20260320_211027\\batch_summary.json",
+  "saved_md": "C:\\Users\\Farkas\\Desktop\\IES\\RL_test_hierarchical_control\\results\\stage1\\stage_archives\\stage2_batch_stage2_round3_local_screen_20260320_211027\\batch_summary.md"
+}
