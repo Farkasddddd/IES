@@ -22,7 +22,7 @@ def run_git(args: list[str]) -> str:
         check=True,
         encoding="utf-8",
     )
-    return completed.stdout.strip()
+    return completed.stdout.rstrip("\r\n")
 
 
 def current_branch() -> str:
@@ -62,8 +62,11 @@ def collect_commits(limit: int | None = None) -> list[dict]:
     branch = current_branch()
     origin_head = current_origin_head()
     records: list[dict] = []
+
     for chunk in raw.split("\x1e"):
-        chunk = chunk.strip()
+        if not chunk:
+            continue
+        chunk = chunk.strip("\r\n")
         if not chunk:
             continue
         parts = chunk.split("\x1f")
@@ -71,7 +74,8 @@ def collect_commits(limit: int | None = None) -> list[dict]:
             continue
         commit_hash, committed_at, author_name, author_email, subject, body = parts[:6]
         files = commit_files(commit_hash)
-        content_summary = subject if not body.strip() else f"{subject}\n{body.strip()}"
+        body = body.strip()
+        content_summary = subject if not body else f"{subject}\n{body}"
         records.append(
             {
                 "commit_hash": commit_hash,
@@ -80,8 +84,8 @@ def collect_commits(limit: int | None = None) -> list[dict]:
                 "author_email": author_email,
                 "branch_name": branch,
                 "subject": subject,
-                "body": body.strip(),
-                "content_summary": content_summary.strip(),
+                "body": body,
+                "content_summary": content_summary,
                 "changed_files_json": json.dumps(files, ensure_ascii=False),
                 "changed_file_count": len(files),
                 "is_on_origin_main": commit_on_origin(commit_hash),
@@ -192,7 +196,6 @@ def export_latest(conn: sqlite3.Connection, limit: int):
 
     items = []
     for row in rows:
-        changed_files = json.loads(row[8])
         items.append(
             {
                 "commit_hash": row[0],
@@ -203,7 +206,7 @@ def export_latest(conn: sqlite3.Connection, limit: int):
                 "subject": row[5],
                 "body": row[6],
                 "content_summary": row[7],
-                "changed_files": changed_files,
+                "changed_files": json.loads(row[8]),
                 "changed_file_count": row[9],
                 "is_on_origin_main": bool(row[10]),
                 "origin_head_when_synced": row[11],
