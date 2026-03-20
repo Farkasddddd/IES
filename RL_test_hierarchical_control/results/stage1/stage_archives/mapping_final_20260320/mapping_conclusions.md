@@ -1,21 +1,31 @@
-# Mapping Conclusions
+# 映射结论
 
-## Final Best Candidates
-- best zero-violation LCOM candidate: final_r_h2_55 (7.6509 yuan/kg, 147980.54 kg)
-- best zero-violation methanol candidate: promote_r_bat_e_35 (149919.41 kg, 8.8830 yuan/kg)
+## 最终最优候选
 
-## Main Mapping Findings
-- H2 storage is the strongest and most robust lever in the explored local region. Increasing r_h2 from 45.8 to around 55 consistently improved both annual methanol output and LCOM, and the improvement survived screen, promote, and final phases.
-- Battery energy expansion improves throughput, but its economic advantage is less robust than the H2 lever. Short and medium runs around r_bat_e=3.0 to 3.5 looked strong, but the long-run final result settled below the best H2-storage candidate.
-- PEM expansion is not the dominant bottleneck in the current Shanghai baseline neighborhood. Increasing r_pem to 0.6 did not deliver a better cost-performance tradeoff, and PEM-including combinations did not beat the best non-PEM candidates.
-- CO2 storage expansion has a weaker positive effect than H2 storage and battery energy. It can improve cost and output slightly, but it did not emerge as the main driver in the tested region.
-- Battery-H2 interactions are sub-additive in the tested neighborhood. Combining the individually good battery and H2 settings did not outperform the best H2-only candidate after adaptation.
+- 零越界条件下 `LCOM` 最优候选：`final_r_h2_55`
+  - `LCOM = 7.6509 yuan/kg`
+  - 年甲醇产量 `147980.54 kg`
+- 零越界条件下产量最高候选：`promote_r_bat_e_35`
+  - 年甲醇产量 `149919.41 kg`
+  - `LCOM = 8.8830 yuan/kg`
 
-## Strategy Mapping Findings
-- Better-performing policies did not simply push methanol pull harder. Compared with the guarded baseline, strong candidates usually lowered average methanol pull ratio and reduced battery reserve preference, while still increasing annual methanol output. This indicates a shift toward steadier, better-buffered operation rather than aggressive instantaneous pulling.
-- Successful H2-storage expansion was associated with a higher effective H2 inventory target and a noticeably lower battery reserve preference. The controller relied more on hydrogen buffering and less on conservative battery holding.
-- Strong battery-expansion candidates also reduced battery reserve preference relative to baseline, suggesting that larger battery energy capacity gave the policy confidence to operate with less reserve hoarding.
-- Strong final candidates increased CO2 target ratios as well, indicating that once hydrogen buffering improved, the policy preferred to hold more carbon-side readiness and feed the methanol section more smoothly over the year.
+## 主要映射规律
 
-## Practical Conclusion
-- For the currently explored Shanghai baseline neighborhood, the dominant design direction is to increase H2 storage to a moderate higher range first. Battery energy expansion remains a valid secondary lever, especially for output growth, but PEM expansion is not the preferred next investment under the current assumptions.
+- 在当前已探索的上海基准邻域内，`H2` 储量是最强、也最稳的主导杠杆。`r_h2` 从 `45.8` 提升到大约 `55` 后，年甲醇产量和 `LCOM` 都持续改善，而且这种优势在 `screen`、`promote`、`final` 三层流程中都保留了下来。
+- 电池能量扩容能够提高系统吞吐能力，但它的经济性优势不如 `H2` 储量扩容稳定。`r_bat_e = 3.0` 到 `3.5` 在短中期评估里表现较强，但长训练后的最终结果仍低于最优的 `H2` 储量方案。
+- 在当前上海基准邻域中，`PEM` 扩容不是主瓶颈。`r_pem` 提升到 `0.6` 后并没有带来更优的成本-产量折中，带 `PEM` 扩容的组合也没有超过最好的非 `PEM` 候选。
+- `CO2` 储量扩容有一定正向作用，但弱于 `H2` 储量和电池能量扩容。它可以带来轻微的产量和成本改善，但在当前测试区间里没有成为主要驱动因素。
+- 电池与 `H2` 两条好方向在当前区间内呈现“次可加”关系。也就是说，两者分别有效，但直接叠加后并没有超过最佳的 `H2` 单因子方案。
+
+## 策略层规律
+
+- 表现更好的策略并不是简单地把甲醇段拉料开得更猛。相对 guarded baseline，强候选通常会降低平均甲醇拉料强度，并降低电池储备偏好，但全年甲醇产量反而更高。这说明系统更像是在做“更平稳、更有缓冲的全年运行”，而不是追求瞬时激进拉料。
+- 成功的 `H2` 储量扩容通常对应更高的有效 `H2` 库存目标，同时伴随更低的电池保守储备偏好。也就是说，控制器更依赖氢缓存，而不是过度保守地把电池当作主要安全垫。
+- 强电池扩容候选也会降低电池储备偏好，这表明当电池容量本身更大时，策略会减少“囤电”倾向，转而用更灵活的方式调度电池。
+- 强候选往往也会提高 `CO2` 侧库存目标，这说明在氢缓冲改善之后，策略更愿意提前建立碳侧准备度，以便让甲醇段全年运行更平滑。
+
+## 工程结论
+
+- 在当前上海基准邻域内，下一步最值得优先考虑的设计方向，是先把 `H2` 储量提升到适度更高的区间。
+- 电池能量扩容仍然是有效的第二杠杆，尤其适合追求更高产量时使用。
+- 在当前假设和当前局部容量空间里，`PEM` 扩容不是优先级最高的投资方向。

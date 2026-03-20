@@ -1,48 +1,48 @@
-# Stage-1 Standardization
+# 第一阶段标准化说明
 
-## Goal
+## 目标
 
-This stage keeps the existing hierarchical-control paradigm but upgrades it to:
+这一阶段不推翻现有分层控制范式，而是在原有可收敛版本上完成以下升级：
 
-- a `1 MW` Shanghai PV reference base
-- ratio-based capacity configuration
-- relative high-level actions
-- observation vectors that include configuration state
-- richer annual evaluation outputs
+- 引入 `1 MW` 上海光伏参考基座
+- 容量参数改为比例化配置
+- 高层动作改为相对量
+- observation 中加入配置态
+- 年度评估输出更加完整
 
-## New Shared Core
+## 新的共享核心
 
-The standardized environment and evaluation logic now live in:
+标准化后的环境与评估逻辑集中在：
 
 - `ies_shared/stage1_config.py`
 - `ies_shared/stage1_env.py`
 - `ies_shared/stage1_eval.py`
 
-The original environment entry files remain import-compatible and now forward to the shared implementation:
+原有环境入口文件仍然保留原导入路径，但内部已经转发到共享实现：
 
 - `RL_test_hierarchical_control/env/ies_bilevel_env_hierarchical.py`
 - `RL_capacity_optimization/env/ies_capacity_env.py`
 
-## Interface Modes
+## 接口模式
 
-Two interface modes are now supported:
+当前支持两种接口模式：
 
 - `legacy`
-  Keeps the previous action and observation interface so old scripts and old trained policies do not break immediately.
+  保留旧版动作和 observation 接口，保证历史脚本和历史模型不会立刻失效。
 - `stage1`
-  Uses:
-  - action space in `[0, 1]^4`
-  - observation with running state, time state, configuration state, and mode flags
-  - extra reward breakdown and physics diagnostics in `info`
+  使用新的标准化接口，包括：
+  - 动作空间为 `[0, 1]^4`
+  - observation 同时包含运行态、时间态、配置态和模式标记
+  - `info` 中额外输出 reward breakdown 与物理诊断项
 
-## Config Management
+## 配置管理
 
-Project-local presets are exposed through:
+项目内的第一阶段预设配置在：
 
 - `RL_test_hierarchical_control/config/stage1_presets.py`
 - `RL_test_hierarchical_control/config/baseline_stage1_shanghai.json`
 
-The baseline Shanghai standardized config is:
+当前上海基准配置为：
 
 - `pv_ref_kw = 1000`
 - `pv_scale = 1.0`
@@ -55,41 +55,41 @@ The baseline Shanghai standardized config is:
 - `r_meoh = 1.0`
 - `mode = grid`
 
-## New Commands
+## 常用命令
 
-### Train a stage-1 standardized policy
+### 训练第一阶段标准化策略
 
 ```powershell
 E:\anaconda\python.exe RL_test_hierarchical_control\train\train_sac_stage1_standardized.py --config-name shanghai_baseline --timesteps 60000 --episode-horizon 168
 ```
 
-### Evaluate a stage-1 standardized policy for 8760 h
+### 按 8760 小时做年度评估
 
 ```powershell
 E:\anaconda\python.exe RL_test_hierarchical_control\train\evaluate_stage1_standardized.py --config-name shanghai_baseline --episode-horizon 8760
 ```
 
-### Run baseline + single-factor + small-grid scans
+### 运行基准配置、单因子扫描和小网格扫描
 
 ```powershell
 E:\anaconda\python.exe RL_test_hierarchical_control\train\run_stage1_sensitivity.py --episode-horizon 8760
 ```
 
-## Output Coverage
+## 输出内容
 
-The new evaluation summary includes:
+新的年度评估结果至少包括：
 
-- performance metrics
-- strategy metrics
-- physics feasibility metrics
+- 性能指标
+- 策略特征指标
+- 物理可行性指标
 - reward breakdown
 
-The hourly rollout export now also includes:
+逐时 rollout 导出中还包含：
 
-- `pv_abs_kw`, `pv_norm`
-- target action ratios
-- load ratios
-- battery charge/discharge
-- reward component terms
-- energy and material balance residuals
-- violation and limit-hit counters
+- `pv_abs_kw`、`pv_norm`
+- 动作目标比例
+- 各设备负荷率
+- 电池充放电
+- reward 分项
+- 能量和物料守恒残差
+- 越界计数与限幅计数

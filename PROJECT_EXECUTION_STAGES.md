@@ -1,94 +1,113 @@
-# Project Execution Stages
+# 项目执行阶段说明
 
-This project follows a staged workflow. The goal is not to jump directly to a global capacity optimum, but to build a reliable control and analysis pipeline step by step.
+本项目按阶段推进，目标不是一开始就直接去找全局最优容量，而是先把控制、评估、映射和泛化能力逐层建立起来。
 
-## Stage 1: Stable, Trustworthy Baseline Policy at the Shanghai Baseline Capacity
+## 阶段 1：在上海基准容量下得到稳定、可信、可解释的策略
 
-Goal:
-- verify the environment structure is physically self-consistent
-- verify the high-level action design is meaningful
-- verify the rule layer translates policy intent into reasonable device behavior
-- verify reward design can drive interpretable behavior
-- verify annual metrics are complete and trustworthy
+目标：
 
-Inputs:
-- Shanghai PV profile
-- baseline capacity configuration
-- standardized stage1 environment interface
+- 验证环境结构在物理上自洽
+- 验证高层动作设计是否合理
+- 验证规则层是否能把高层意图稳定映射到底层设备
+- 验证 reward 是否能驱动出可解释行为
+- 验证年度指标输出是否完整可信
 
-Deliverables:
-- baseline policy `pi_base` under the Shanghai baseline capacity
-- standardized environment interface with parameterized config, relative actions, and complete outputs
+输入：
 
-Practical meaning:
-- this stage establishes the formal baseline used by later comparison work
-- later capacity studies should not bypass this baseline
+- 上海光伏典型年数据
+- 上海基准容量配置
+- 标准化后的 `stage1` 环境接口
 
-## Stage 2: Change Capacity Parameters and Fine-Tune from the Baseline Policy
+交付物：
 
-Goal:
-- reuse the baseline policy as a good initialization under nearby capacity settings
-- avoid unnecessary retraining from scratch for every new configuration
+- 上海基准容量下的基准策略 `pi_base`
+- 标准化环境接口
+  - 配置参数化
+  - 动作相对化
+  - 指标输出完整化
 
-Method:
-- start from the baseline policy
-- modify one or more capacity ratios
-- continue training under the new configuration
-- archive both the new configuration and the fine-tuned policy
+实际意义：
 
-Expected outputs:
-- one policy per studied capacity configuration
-- training metadata linking each policy back to its initialization source
+- 这是后续所有容量研究的正式基线
+- 后续容量实验不应绕开这条基线
 
-Practical meaning:
-- this stage is used to study how policy behavior shifts when capacity changes
-- it is not yet the final scientific output by itself
+## 阶段 2：改变容量参数，并从基准策略出发做微调
 
-## Stage 3: Build the Capacity -> Policy -> Performance Mapping
+目标：
 
-Goal:
-- extract general patterns instead of only collecting many separate policies
+- 把基准策略当作良好初始化
+- 避免每个新容量配置都从零开始训练
 
-Core question:
-- how does capacity configuration change policy characteristics
-- how do policy characteristics change annual performance
+方法：
 
-Typical outputs:
-- trends in inventory targets, methanol pull behavior, and battery preference
-- trends in production, cost, curtailment, and constraint behavior
-- interpretable regime changes such as hydrogen-limited vs carbon-limited operation
+- 从基准策略出发
+- 修改一个或多个容量比例
+- 在新配置下继续训练
+- 留档新配置、训练来源和评估结果
 
-Practical meaning:
-- this stage is the core analysis layer for paper writing
-- the key result is the mapping, not a single best model checkpoint
+输出：
 
-## Stage 4: Train a Capacity-Conditioned Unified Agent
+- 每个研究容量配置对应的一份策略
+- 能追溯到初始化来源的训练元数据
 
-Goal:
-- train one policy that responds to configuration context within a predefined capacity range
+实际意义：
 
-Careful wording:
-- not a policy that works for every possible capacity
-- a policy that can adapt within the capacity distribution covered during training
+- 这一阶段用于研究“容量变化会怎样改变策略”
+- 但它本身还不是最终论文结论
 
-Requirements:
-- stage1 interface must already include configuration state
-- stage2 and stage3 must already define the capacity ranges and policy-response patterns worth learning
+## 阶段 3：建立“容量 -> 策略 -> 性能”映射
 
-Practical meaning:
-- this stage turns the staged research results into a generalized control model
+目标：
 
-## Current Execution Rule
+- 不只收集很多模型，而是提炼规律
 
-Until the new GPU line fully meets the replacement standard, keep two tracks in parallel:
+核心问题：
 
-- stable line: responsible for formal scans and pattern extraction
-- improved GPU line: responsible for safety convergence fixes and later fine-tuning capability
+- 容量变化如何改变策略特征
+- 策略特征变化又如何影响年度表现
 
-The improved GPU line can replace the old stable baseline only when it satisfies all of the following:
+典型输出：
 
-- annual constraint violations equal zero
-- annual methanol output is not meaningfully worse than the old stable line
-- LCOM is not meaningfully worse than the old stable line
-- training efficiency is higher
-- engineering workflow is cleaner and easier to extend
+- 库存目标、甲醇拉料强度、电池储备偏好的变化趋势
+- 产量、成本、弃电、约束行为的变化趋势
+- 系统从“氢受限”转向“碳受限”等运行区间变化
+
+实际意义：
+
+- 这是论文分析层的核心
+- 真正重要的是映射关系，而不是单个 checkpoint
+
+## 阶段 4：训练统一的 capacity-conditioned agent
+
+目标：
+
+- 训练一个能根据容量配置上下文自动调整行为的统一策略
+
+严谨表述：
+
+- 不是“适配一切容量”
+- 而是在训练覆盖的容量分布范围内具备泛化能力
+
+前提：
+
+- 阶段 1 已经把标准化接口建好
+- 阶段 2 和阶段 3 已经把值得学习的容量范围与规律摸清
+
+实际意义：
+
+- 这是把分阶段研究结果进一步抽象成统一控制器的步骤
+
+## 当前执行规则
+
+在新 GPU 线没有完全满足接班标准之前，保持两条线并行：
+
+- 稳定线：负责正式扫描、规律整理和保守基线
+- 改进线：负责安全收敛修复、训练效率提升和微调能力建设
+
+只有在同时满足以下条件时，新线才可以正式接班旧稳定线：
+
+- 全年约束越界为 `0`
+- 年甲醇产量不显著差于旧稳定线
+- `LCOM` 不显著差于旧稳定线
+- 训练效率更高
+- 工程链路更规范、更易扩展

@@ -1,63 +1,74 @@
-# Stage 2 Acceleration Workflow
+# 阶段 2 加速实验流程
 
-The current fine-tune loop can produce a capacity-policy-performance mapping, but it becomes slow if every candidate receives the same training budget.
+如果阶段 2 的每个容量点都直接做长训练，节奏会非常慢，也不利于快速建立映射。
 
-Use a three-phase workflow instead:
+因此当前采用三层实验流程。
 
-## Phase 1: Screen
+## 第一层：Screen 快筛
 
-Purpose:
-- quickly eliminate weak directions
+目的：
 
-Recommended setting:
-- warm-start fine-tune for 2000 timesteps
-- full-year evaluation for ranking
+- 快速排除弱方向
 
-Interpretation:
-- not for final claims
-- good for deciding which local directions deserve more compute
+建议配置：
 
-## Phase 2: Promote
+- warm-start 微调 `2000` timesteps
+- 然后直接做全年评估
 
-Purpose:
-- confirm whether screen winners remain strong after more adaptation
+解释：
 
-Recommended setting:
-- warm-start fine-tune for 10000 timesteps
-- full-year evaluation for updated ranking
+- 这一层不是为了做最终结论
+- 主要是为了判断哪些局部方向值得继续投入算力
 
-Interpretation:
-- suitable for early mapping conclusions
-- good for local interaction studies
+## 第二层：Promote 提升确认
 
-## Phase 3: Final
+目的：
 
-Purpose:
-- generate final candidate policies and archival evidence
+- 验证快筛中的强点在更充分适应后是否仍然优秀
 
-Recommended setting:
-- warm-start fine-tune for 60000 timesteps
-- full-year evaluation
+建议配置：
 
-Interpretation:
-- use this phase only for shortlisted candidates
+- warm-start 微调 `10000` timesteps
+- 全年评估后重新排序
 
-## Practical Rule
+解释：
 
-Do not push every capacity point directly to long training.
+- 这一层适合做早期规律提炼
+- 也适合判断局部组合是否存在交互效应
 
-Instead:
-- screen many points cheaply
-- promote only the best few
-- finalize only the best candidates
+## 第三层：Final 最终确认
 
-## Batch Runner
+目的：
 
-Use:
-- `C:\Users\Farkas\Desktop\IES\RL_test_hierarchical_control\train\run_stage2_finetune_batch.py`
+- 为少数候选点生成正式留档与结论支撑
 
-This runner:
-- reads a directory of config json files
-- warm-starts from a given baseline model
-- trains and evaluates each config
-- incrementally saves a batch manifest and summary table
+建议配置：
+
+- warm-start 微调 `60000` timesteps
+- 全年评估
+
+解释：
+
+- 这一层只给少数最强候选
+- 不应该对所有点无差别使用
+
+## 当前原则
+
+不要让所有容量点都直接进入长训练，而是：
+
+- 先用低成本快筛很多点
+- 再把少数优胜点提升到中等训练预算
+- 最后只给极少数候选做最终确认
+
+## 批量脚本
+
+当前批量 warm-start 微调脚本为：
+
+- `RL_test_hierarchical_control/train/run_stage2_finetune_batch.py`
+
+这个脚本可以：
+
+- 读取一个配置目录下的多个 `json` 配置
+- 从指定基准模型做 warm-start 微调
+- 逐个训练与评估
+- 增量保存 `manifest`、`csv`、`json` 和 `md` 汇总结论

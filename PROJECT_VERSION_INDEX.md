@@ -1,114 +1,114 @@
-# Project Version Index
+# 项目版本索引
 
-## Purpose
+## 目的
 
-This file summarizes the major experiment folders in the workspace so later work can stay organized.
+这个文件用于概览工作区内几个主要实验目录的定位，避免后续继续开发时把不同阶段的代码和结果混在一起。
 
 ## 1. `RL_test_fixed_config`
 
-Path:
+路径：
 
 `C:\Users\27878\Desktop\IES\RL_test_fixed_config`
 
-Role:
+定位：
 
-- earlier fixed-configuration RL experiments
-- flat or semi-flat control structure
-- used to debug PV parsing, model loading, DAC state transitions, and annual evaluation flow
+- 较早期的固定配置 RL 实验目录
+- 采用平面或半平面控制结构
+- 主要用于调试光伏解析、模型加载、DAC 状态转移和年度评估流程
 
-Key artifacts:
+代表文件：
 
-- environment:
+- 环境：
   `RL_test_fixed_config/env/ies_bilevel_env_fixed.py`
-- training:
+- 训练：
   `RL_test_fixed_config/train/train_sac_fixed.py`
-- annual evaluation:
+- 年度评估：
   `RL_test_fixed_config/train/evaluate_policy_8760.py`
 
-Representative result:
+代表结果：
 
 - `sac_fixed_config_v3.zip`
-- annual evaluation showed the policy could run for 8760 hours, but `CO2` inventory stayed too close to the lower boundary and `H2` overflow still appeared
+- 年度评估已经能跑满 `8760h`，但 `CO2` 库存长期贴近下边界，`H2` 仍出现过溢出
 
-Interpretation:
+解释：
 
-- useful as a debugging and transition version
-- not ideal as the final dispatch structure
+- 适合作为调试和过渡版本参考
+- 不适合作为最终正式调度结构
 
 ## 2. `RL_test_hierarchical_control`
 
-Path:
+路径：
 
 `C:\Users\27878\Desktop\IES\RL_test_hierarchical_control`
 
-Role:
+定位：
 
-- current structured dispatch version
-- rule layer enforces physical safety
-- RL only optimizes high-level operating preferences
+- 当前主线的分层调度版本
+- 规则层负责守住物理安全
+- RL 只优化高层运行偏好
 
-Key artifacts:
+代表文件：
 
-- environment:
+- 环境：
   `RL_test_hierarchical_control/env/ies_bilevel_env_hierarchical.py`
-- training:
+- 训练：
   `RL_test_hierarchical_control/train/train_sac_hierarchical.py`
-- annual evaluation:
+- 年度评估：
   `RL_test_hierarchical_control/train/evaluate_policy_8760.py`
-- annual plots:
+- 年度图表：
   `RL_test_hierarchical_control/results/figures/`
-- explanatory note:
+- 说明文档：
   `RL_test_hierarchical_control/README_hierarchical_model.md`
 
-Representative result:
+代表结果：
 
 - `sac_hierarchical_v1.zip`
-- annual methanol production about `147,427 kg`
-- no `CO2` overflow
-- no `H2` overflow
-- `CO2` and `H2` tank ratios remained inside `20% ~ 80%`
+- 年甲醇产量约 `147427 kg`
+- 无 `CO2` 溢出
+- 无 `H2` 溢出
+- `CO2` 与 `H2` 储罐比例基本维持在 `20% ~ 80%`
 
-Interpretation:
+解释：
 
-- this is the current dispatch baseline
-- safer and more interpretable than the fixed flat-control version
-- suitable as the reference policy for capacity optimization stage
+- 这是当前调度层的正式基线
+- 相比固定配置平面控制版本，更安全、更易解释
+- 适合作为容量优化阶段的参考策略来源
 
 ## 3. `RL_capacity_optimization`
 
-Path:
+路径：
 
 `C:\Users\27878\Desktop\IES\RL_capacity_optimization`
 
-Role:
+定位：
 
-- upper-level capacity configuration optimization workspace
-- uses the hierarchical dispatch policy as a fixed lower-level controller in the first stage
-- intended for configuration ranking, screening, and later co-optimization
+- 上层容量配置优化工作区
+- 第一阶段使用分层调度策略作为固定下层控制器
+- 用于候选配置筛选、排序以及后续协同优化
 
-Key artifacts:
+代表文件：
 
-- copied reference environment:
+- 环境副本：
   `RL_capacity_optimization/env/ies_capacity_env.py`
-- editable economics:
+- 经济参数：
   `RL_capacity_optimization/config/economic_params.py`
-- methanol market scenarios:
+- 甲醇市场场景：
   `RL_capacity_optimization/config/market_scenarios.py`
-- capacity ranking logic:
+- 容量排序逻辑：
   `RL_capacity_optimization/metrics/capacity_objectives.py`
-- hierarchical dispatch reference note:
+- 分层调度参考说明：
   `RL_capacity_optimization/docs/hierarchical_dispatch_reference.md`
-- reference policy copy:
+- 参考策略副本：
   `RL_capacity_optimization/results/models/sac_hierarchical_reference.zip`
 
-Current objective:
+当前任务：
 
-- screen capacity combinations using a fixed dispatch policy
-- reject infeasible combinations first
-- rank feasible combinations by annual economics under methanol price scenarios
+- 在固定调度策略下筛选容量组合
+- 先排除明显不可行配置
+- 再按不同甲醇价格场景下的年度经济性进行排序
 
-## Recommended Usage
+## 推荐使用原则
 
-- keep `RL_test_hierarchical_control` as the dispatch benchmark folder
-- do not overwrite old results when testing new capacity-search logic
-- keep all upper-level sizing scripts and outputs inside `RL_capacity_optimization`
+- `RL_test_hierarchical_control` 保持为调度层基准目录
+- 新的容量搜索逻辑不要覆盖旧结果
+- 所有上层容量优化脚本和输出尽量都保留在 `RL_capacity_optimization` 下

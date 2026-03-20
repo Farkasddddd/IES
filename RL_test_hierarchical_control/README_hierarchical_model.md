@@ -1,192 +1,181 @@
-# Hierarchical Control Model Notes
+# 分层控制模型说明
 
-## Purpose
+## 文件夹用途
 
-This folder contains the hierarchical-control version of the integrated energy system model.
-The key design idea is:
+这个目录保存的是综合能源系统的分层控制版本。核心思想不是让 RL 直接控制每一台设备，而是把控制问题拆成两部分：
 
-- Storage tanks are the core coupling states.
-- Physical safety is enforced by a rule layer.
-- Reinforcement learning only provides high-level operating preferences.
+- 储罐状态和物理边界由规则层守住
+- RL 只输出高层运行偏好
 
-This is different from the earlier flat-control version, where RL directly controlled low-level device actions.
+这和更早期的平面控制版本不同。早期版本里，RL 更直接地碰到底层动作，因此更容易学到数值上可行但工程上不够稳定的行为。
 
-## Overall Control Logic
+## 整体控制结构
 
-The system is organized around four layers.
+当前系统可以理解为四层。
 
-### 1. Safety Layer
+### 1. 安全层
 
-This layer enforces hard physical logic.
+这一层负责硬约束，保证系统不做明显违背物理逻辑的事。
 
-- `CO2` tank must not overflow.
-- `H2` tank must not overflow.
-- `CO2` tank must not be drained to zero.
-- `H2` tank must not be drained to zero.
-- Battery must stay within its allowed SOC band.
-- DAC units must follow the fixed state machine:
-  - adsorption for 2 hours
-  - saturated waiting state with no time limit
-  - desorption for 1 hour
-  - cooling for 1 hour
-  - ready waiting state with no time limit
+- `CO2` 储罐不能溢出
+- `H2` 储罐不能溢出
+- `CO2` 储罐不能被抽空
+- `H2` 储罐不能被抽空
+- 电池 `SOC` 必须在允许区间内
+- DAC 必须遵守固定状态机
+  - 吸附 `2` 小时
+  - 饱和等待，不限时
+  - 解吸 `1` 小时
+  - 冷却 `1` 小时
+  - 就绪等待，不限时
 
-### 2. Stability Layer
+### 2. 稳定层
 
-This layer encodes the operating philosophy.
+这一层表达的是运行哲学，而不是硬约束。
 
-- `CO2` and `H2` storage should stay in a healthy working zone.
-- In the current implementation, the safe band is `20%` to `80%`.
-- The RL policy is encouraged to keep tanks in a narrower target zone inside that safe band.
-- Methanol production should avoid large hour-to-hour oscillations.
-- Battery should also avoid staying near empty or near full for long periods.
+- `CO2` 和 `H2` 储量应保持在健康工作区间
+- 当前实现中的安全区间大致是 `20%` 到 `80%`
+- RL 被鼓励把储罐维持在这个安全区间内部更窄的目标带
+- 甲醇段应避免剧烈的小时级波动
+- 电池也不应长期贴近空电或满电边界
 
-### 3. Execution Layer
+### 3. 执行层
 
-This layer converts high-level intent into actual device behavior.
+这一层把高层目标翻译成设备行为。
 
-- DAC provides slow `CO2` replenishment.
-- PEM provides relatively fast `H2` adjustment.
-- Methanol synthesis consumes `CO2` and `H2` only if storage remains above the safe floor.
-- Battery absorbs short-term PV fluctuations.
-- Grid is used as a fallback when on-site flexibility is not enough.
+- DAC 提供较慢的 `CO2` 补充
+- PEM 提供更快的 `H2` 调节
+- 甲醇段只有在 `CO2` 和 `H2` 库存高于安全底线时才能消耗原料
+- 电池负责吸收短时光伏波动
+- 电网在现场灵活性不足时作为兜底
 
-### 4. Learning Layer
+### 4. 学习层
 
-RL does not directly choose device power for every unit.
-Instead, RL outputs high-level operating preferences:
+RL 不直接给每台设备一个低层控制量，而是输出四个高层偏好：
 
-- desired `CO2` inventory target
-- desired `H2` inventory target
-- methanol production aggressiveness
-- battery reserve preference
+- `CO2` 库存目标
+- `H2` 库存目标
+- 甲醇段拉料强度
+- 电池储备偏好
 
-The rule layer then translates these preferences into low-level actions.
+随后由规则层把这些偏好映射成实际执行动作。
 
-## Why This Structure Was Chosen
+## 为什么采用这种结构
 
-The original flat RL design exposed too much physical logic directly to the policy.
-That caused several problems:
+平面 RL 版本把太多物理细节直接暴露给了策略网络，带来几个问题：
 
-- DAC state dependence was hard for RL to learn cleanly.
-- Tank safety depended too much on reward shaping.
-- The policy could produce physically poor but numerically acceptable behaviors.
-- Short-horizon training did not match long-horizon operating intuition well.
+- DAC 的状态依赖很难被 RL 直接学干净
+- 储罐安全过度依赖 reward shaping
+- 策略可能学出数值上过关、物理上很差的行为
+- 短周期训练结果和长周期运行直觉不一致
 
-The hierarchical version addresses this by separating:
+分层结构的好处是把三件事拆开：
 
-- what must always remain physically valid
-- what should remain operationally healthy
-- what RL is allowed to optimize
+- 哪些东西必须始终物理可行
+- 哪些东西应该长期运行健康
+- RL 被允许优化哪些高层偏好
 
-## State Variables That Matter Most
+## 最重要的状态变量
 
-The most important dynamic states are:
+对这个环境最关键的动态状态包括：
 
-- `CO2` tank inventory
-- `H2` tank inventory
-- battery `SOC`
-- DAC phase distribution
+- `CO2` 储罐库存
+- `H2` 储罐库存
+- 电池 `SOC`
+- DAC 阶段分布
   - ready
   - adsorption
   - saturated
   - desorption
   - cooling
-- recent methanol production level
-- current PV level and time position
+- 最近甲醇产量水平
+- 当前光伏水平和时间位置
 
-These states are all represented in the environment observation.
+这些内容都会体现在环境 observation 里。
 
-## How DAC Control Works
+## DAC 的控制方式
 
-The DAC cluster is not directly controlled by a low-level action like "turn on unit 137".
-Instead, the RL policy outputs a desired `CO2` inventory target.
-The rule layer then converts this target into DAC behavior:
+DAC 集群不是通过“打开第 137 台”这种低层指令控制的。策略给出的其实是 `CO2` 库存目标，规则层再把这个目标转成 DAC 行为：
 
-- if current `CO2` inventory is below target, the controller increases the tendency to start desorption from saturated units
-- if `CO2` inventory is not high enough, the controller also keeps feeding ready units into adsorption
-- DAC state transitions remain fully constrained by the timer-based state machine
+- 如果当前 `CO2` 库存低于目标，控制器会提高从饱和单元转入解吸的倾向
+- 如果 `CO2` 库存仍然偏低，也会让更多 ready 单元进入吸附
+- 但所有 DAC 状态迁移始终服从计时状态机
 
-So the RL policy controls the inventory objective, while the rule layer controls the exact DAC transitions.
+所以 RL 控的是库存目标，规则层控的是具体状态转移。
 
-## How PEM Control Works
+## PEM 的控制方式
 
-PEM is treated as a fast-response unit.
-It is not forced to blindly follow DAC output.
-Instead, PEM production is determined from:
+PEM 被视为快响应单元，它不需要被动跟随 DAC 的瞬时输出。其产氢量主要由以下因素共同决定：
 
-- desired `H2` inventory target
-- expected methanol demand
-- current `H2` tank inventory
+- `H2` 库存目标
+- 预期甲醇需求
+- 当前 `H2` 储罐库存
 
-This reflects the intended operating logic:
+这对应的工程逻辑是：
 
-- DAC is a slow `CO2` supply chain
-- PEM is a faster balancing actuator
-- `H2` should be produced according to downstream demand and inventory status, not only according to instantaneous DAC behavior
+- DAC 是慢速 `CO2` 供给链
+- PEM 是更灵活的平衡执行器
+- `H2` 生产应围绕下游需求和库存状态调节，而不是只盯住 DAC 当下输出
 
-## How Methanol Synthesis Is Controlled
+## 甲醇段如何被控制
 
-Methanol synthesis is not allowed to deplete storage below the safety floor.
-The policy chooses a high-level pull intensity, and the rule layer converts it into actual feed:
+甲醇段不允许把库存直接拉到安全底线以下。策略只给出高层拉料强度，规则层再约束成实际进料：
 
-- actual `CO2` feed is limited by current drawable `CO2`
-- actual `H2` feed is limited by current drawable `H2`
-- the target stoichiometric ratio is enforced through the rule layer
+- 实际 `CO2` 进料受当前可提取 `CO2` 限制
+- 实际 `H2` 进料受当前可提取 `H2` 限制
+- 目标化学计量比由规则层保证
 
-This means the methanol section is treated as a controlled sink that must respect storage health.
+因此甲醇段更像一个必须服从储量健康状况的受控负荷端。
 
-## How Battery and Grid Are Used
+## 电池与电网的使用方式
 
-Battery acts as a short-term buffer.
-Its role is not to perform aggressive arbitrage in the current version.
+电池在当前版本中的角色是短时缓冲器，而不是激进套利工具。
 
-- when PV surplus exists, battery charges if it is below its preferred reserve zone
-- when local generation is insufficient, battery discharges if it is above its lower safe boundary
-- grid then covers the remaining deficit
+- 当光伏有富余时，如果电池低于偏好储备区，就优先充电
+- 当本地供电不足时，如果电池高于安全下界，就允许放电
+- 剩余缺口再由电网补足
 
-This makes the battery a stabilizing unit rather than the main optimization target.
+因此电池更像稳定器，而不是当前版本的主优化对象。
 
-## Current RL Action Meaning
+## 当前 RL 动作含义
 
-The environment action space is four-dimensional in this version:
+当前版本的动作空间是四维的：
 
-1. `CO2` inventory target
-2. `H2` inventory target
-3. methanol pull intensity
-4. battery reserve preference
+1. `CO2` 库存目标
+2. `H2` 库存目标
+3. 甲醇段拉料强度
+4. 电池储备偏好
 
-This is the core difference from the earlier version.
+这也是它和早期版本最重要的区别。
 
-## Current Design Philosophy
+## 当前设计哲学
 
-The model reflects the following engineering intuition:
+这一版体现的是如下工程直觉：
 
-- tanks are the system core and must remain healthy
-- DAC is slow, energy-intensive, and strongly state-dependent
-- PEM is flexible and should support downstream inventory balance
-- methanol production should be stable, not violently oscillatory
-- battery smooths short-term disturbances
-- grid is a safety backup, not the default primary source
+- 储罐是系统核心，必须保持健康
+- DAC 慢、耗能高、强状态依赖
+- PEM 灵活，应服务于下游库存平衡
+- 甲醇生产应尽量平稳，而不是剧烈震荡
+- 电池用于平滑短时扰动
+- 电网是安全兜底，而不是默认主能源来源
 
-## What This Version Is Good For
+## 这一版适合做什么
 
-This version is intended as a structured prototype for:
+当前分层版本适合做：
 
-- annual dispatch analysis
-- cross-region PV profile testing
-- future capacity co-optimization studies
-- comparing control philosophies without violating basic physical logic
+- 年尺度调度分析
+- 不同地区光伏输入测试
+- 后续容量协同优化研究
+- 在不破坏基本物理逻辑的前提下比较不同控制哲学
 
-It is not yet the final economic optimum.
-Its main value is that it preserves the intended control logic much better than the flat RL setup.
+它还不是最终经济最优模型，但它比平面 RL 版本更能保留我们想要的控制逻辑。
 
-## Next Likely Improvements
+## 下一步合理改进方向
 
-Reasonable next steps include:
+后续可优先考虑：
 
-- improving the rule that maps `CO2` target error into DAC adsorption/desorption decisions
-- improving battery reserve logic
-- introducing more realistic initialization for short training windows
-- extending the same framework to different regional PV datasets
-- coupling this dispatch layer with upper-level capacity optimization
+- 改进 `CO2` 目标误差到 DAC 吸附/解吸行为的映射规则
+- 改进电池储备逻辑
+- 为短窗口训练引入更合理的初始状态
+- 扩展到不同地区光伏数据
+- 和上层容量优化进一步耦合

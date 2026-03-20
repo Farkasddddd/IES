@@ -1,31 +1,33 @@
-# New Machine Setup
+# 新电脑迁移说明
 
-## Recommended Python
+## 推荐 Python 版本
 
-- current verified interpreter on the source machine: `Python 3.13.9`
-- recommended setup on a new machine: create a fresh conda or venv environment first, then install from `requirements.txt`
+- 当前这台机器已经验证可用的解释器版本是 `Python 3.13.9`
+- 新电脑建议优先安装 `Python 3.13.x`
+- 推荐先新建独立环境，再通过 `requirements.txt` 安装依赖
 
-## What To Copy
+## 需要复制的内容
 
-Copy the whole project folder, not just one subfolder:
+建议直接复制整个项目根目录，而不是只复制某一个子文件夹。至少应包含：
 
 - `RL_test_fixed_config/`
 - `RL_test_hierarchical_control/`
 - `RL_capacity_optimization/`
+- `data/`
 - `requirements.txt`
 - `PROJECT_VERSION_INDEX.md`
 - `SETUP_NEW_MACHINE.md`
 
-This keeps:
+这样可以同时保留：
 
-- all source code
-- all trained models
-- all archived search runs
-- all annual evaluation results
+- 源代码
+- 已训练模型
+- 阶段归档结果
+- 年度评估结果
 
-## Suggested Steps
+## 推荐安装步骤
 
-### Option A: Conda
+### 方案 A：Conda
 
 ```powershell
 conda create -n ies python=3.13 -y
@@ -34,7 +36,7 @@ python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-### Option B: venv
+### 方案 B：venv
 
 ```powershell
 python -m venv .venv
@@ -43,46 +45,48 @@ python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-## Quick Verification
+## 快速校验
 
-After installation, run one of these checks from the project root:
+安装完成后，在项目根目录运行：
 
 ```powershell
 python -m py_compile RL_test_hierarchical_control\train\train_sac_hierarchical.py
 python -m py_compile RL_capacity_optimization\train\finetune_stage2_candidate.py
 ```
 
-## Common Run Commands
+如果这两条能通过，说明当前训练主线至少在语法层面可用。
 
-### Hierarchical dispatch training
+## 常用运行命令
+
+### 分层调度训练
 
 ```powershell
 python RL_test_hierarchical_control\train\train_sac_hierarchical.py
 ```
 
-### Capacity stage-1 search
+### 容量阶段 1 搜索
 
 ```powershell
 python RL_capacity_optimization\train\search_capacity_random.py --n-trials 60 --seed 20260319
 python RL_capacity_optimization\train\search_capacity_local.py --n-trials 60 --seed 20260319 --radius 1
 ```
 
-### Capacity stage-2 fine-tuning
+### 容量阶段 2 微调
 
 ```powershell
 python RL_capacity_optimization\train\finetune_stage2_candidate.py --candidate-id m1_profit_medium --timesteps 60000 --seed 20260319 --episode-horizon 168
 python RL_capacity_optimization\train\evaluate_stage2_candidate.py --candidate-id m1_profit_medium
 ```
 
-### Stage-2 batch run
+### 阶段 2 批量运行
 
 ```powershell
 python RL_capacity_optimization\train\run_stage2_batch.py --timesteps 60000 --seed 20260319 --episode-horizon 168 --skip-completed
 ```
 
-## Important Notes
+## 迁移时需要注意
 
-- all project scripts already use relative project paths, so you do not need to keep the exact same absolute path as the old machine
-- the `data/` folders and `results/` folders must be copied together with the code
-- if you want to continue from existing trained policies, make sure the corresponding `.zip` model files are copied too
-- if a new machine uses a different Python major version and package compatibility becomes a problem, prefer matching `Python 3.13.x` first
+- 现在项目脚本基本都使用项目内相对路径，因此新电脑不需要保持和旧电脑完全一致的绝对路径
+- `data/` 和 `results/` 需要和代码一起复制，否则历史结果和模型无法衔接
+- 如果想直接接着已有策略继续训练，别忘了把对应的 `.zip` 模型文件一起带上
+- 如果新电脑因为 Python 主版本不同出现依赖兼容问题，优先先对齐到 `Python 3.13.x`
