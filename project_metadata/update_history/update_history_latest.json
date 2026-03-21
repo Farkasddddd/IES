@@ -1,6 +1,44 @@
 {
   "updates": [
     {
+      "commit_hash": "dad69c1f4e14b1f35751f26aec8a91b97bd022c1",
+      "committed_at": "2026-03-21T13:59:57+08:00",
+      "author_name": "farkasd777",
+      "author_email": "farkasd0202@gmail.com",
+      "branch_name": "main",
+      "subject": "feat: 增加统一策略模型选择流程",
+      "body": "",
+      "content_summary": "feat: 增加统一策略模型选择流程",
+      "changed_files": [
+        "RL_test_hierarchical_control/CAPACITY_CONDITIONED_AGENT.md",
+        "RL_test_hierarchical_control/train/analyze_capacity_conditioned_progress.py",
+        "RL_test_hierarchical_control/train/select_capacity_conditioned_model.py"
+      ],
+      "changed_file_count": 3,
+      "is_on_origin_main": false,
+      "origin_head_when_synced": "78220195ef3a073598ec742a77bdb767f100f7fe",
+      "recorded_at": "2026-03-21T14:00:08+08:00"
+    },
+    {
+      "commit_hash": "78220195ef3a073598ec742a77bdb767f100f7fe",
+      "committed_at": "2026-03-20T23:57:17+08:00",
+      "author_name": "farkasd777",
+      "author_email": "farkasd0202@gmail.com",
+      "branch_name": "main",
+      "subject": "chore: 同步统一策略阶段更新记录",
+      "body": "",
+      "content_summary": "chore: 同步统一策略阶段更新记录",
+      "changed_files": [
+        "project_metadata/update_history/update_history.db",
+        "project_metadata/update_history/update_history_latest.json",
+        "project_metadata/update_history/update_history_latest.md"
+      ],
+      "changed_file_count": 3,
+      "is_on_origin_main": true,
+      "origin_head_when_synced": "78220195ef3a073598ec742a77bdb767f100f7fe",
+      "recorded_at": "2026-03-21T14:00:08+08:00"
+    },
+    {
       "commit_hash": "714280a957f360f9b8474df9e43646cc6ac9e4b2",
       "committed_at": "2026-03-20T23:56:50+08:00",
       "author_name": "farkasd777",
@@ -15,9 +53,9 @@
         "RL_test_hierarchical_control/train/train_sac_capacity_conditioned.py"
       ],
       "changed_file_count": 3,
-      "is_on_origin_main": false,
-      "origin_head_when_synced": "8a87799c2070f2f384160f0496eb87b0908dc823",
-      "recorded_at": "2026-03-20T23:56:57+08:00"
+      "is_on_origin_main": true,
+      "origin_head_when_synced": "78220195ef3a073598ec742a77bdb767f100f7fe",
+      "recorded_at": "2026-03-21T14:00:08+08:00"
     },
     {
       "commit_hash": "8a87799c2070f2f384160f0496eb87b0908dc823",
@@ -36,8 +74,8 @@
       ],
       "changed_file_count": 4,
       "is_on_origin_main": true,
-      "origin_head_when_synced": "8a87799c2070f2f384160f0496eb87b0908dc823",
-      "recorded_at": "2026-03-20T23:56:57+08:00"
+      "origin_head_when_synced": "78220195ef3a073598ec742a77bdb767f100f7fe",
+      "recorded_at": "2026-03-21T14:00:08+08:00"
     },
     {
       "commit_hash": "1f5cc1d44aec8a225a71bab3a095b96cfe97a419",
@@ -55,8 +93,8 @@
       ],
       "changed_file_count": 3,
       "is_on_origin_main": true,
-      "origin_head_when_synced": "8a87799c2070f2f384160f0496eb87b0908dc823",
-      "recorded_at": "2026-03-20T23:56:57+08:00"
+      "origin_head_when_synced": "78220195ef3a073598ec742a77bdb767f100f7fe",
+      "recorded_at": "2026-03-21T14:00:08+08:00"
     },
     {
       "commit_hash": "f3dd4f1cbc4c6915ea4cc0699d125884a998bca1",
@@ -72,8 +110,8 @@
       ],
       "changed_file_count": 1,
       "is_on_origin_main": true,
-      "origin_head_when_synced": "8a87799c2070f2f384160f0496eb87b0908dc823",
-      "recorded_at": "2026-03-20T23:56:57+08:00"
+      "origin_head_when_synced": "78220195ef3a073598ec742a77bdb767f100f7fe",
+      "recorded_at": "2026-03-21T14:00:08+08:00"
     },
     {
       "commit_hash": "37e60f0c85d512cf981795b92b6462fac07511e1",
@@ -91,8 +129,8 @@
       ],
       "changed_file_count": 3,
       "is_on_origin_main": true,
-      "origin_head_when_synced": "8a87799c2070f2f384160f0496eb87b0908dc823",
-      "recorded_at": "2026-03-20T23:56:57+08:00"
+      "origin_head_when_synced": "78220195ef3a073598ec742a77bdb767f100f7fe",
+      "recorded_at": "2026-03-21T14:00:08+08:00"
     },
     {
       "commit_hash": "db5d71daa6b92c139faa53dac198ed76fc60680b",
@@ -114,8 +152,8 @@
       ],
       "changed_file_count": 7,
       "is_on_origin_main": true,
-      "origin_head_when_synced": "8a87799c2070f2f384160f0496eb87b0908dc823",
-      "recorded_at": "2026-03-20T23:56:57+08:00"
+      "origin_head_when_synced": "78220195ef3a073598ec742a77bdb767f100f7fe",
+      "recorded_at": "2026-03-21T14:00:08+08:00"
     },
     {
       "commit_hash": "8aa5ada4c0583501b4390c0a1b44187c24cf2171",
@@ -139,8 +177,8 @@
       ],
       "changed_file_count": 9,
       "is_on_origin_main": true,
-      "origin_head_when_synced": "8a87799c2070f2f384160f0496eb87b0908dc823",
-      "recorded_at": "2026-03-20T23:56:57+08:00"
+      "origin_head_when_synced": "78220195ef3a073598ec742a77bdb767f100f7fe",
+      "recorded_at": "2026-03-21T14:00:08+08:00"
     },
     {
       "commit_hash": "a80509f209975996a2e3e66c55dcd3ed782bb7a6",
@@ -156,8 +194,8 @@
       ],
       "changed_file_count": 1,
       "is_on_origin_main": true,
-      "origin_head_when_synced": "8a87799c2070f2f384160f0496eb87b0908dc823",
-      "recorded_at": "2026-03-20T23:56:57+08:00"
+      "origin_head_when_synced": "78220195ef3a073598ec742a77bdb767f100f7fe",
+      "recorded_at": "2026-03-21T14:00:08+08:00"
     },
     {
       "commit_hash": "6457d7b9fa6b7665d26687387fcc6098e172c5f1",
@@ -173,8 +211,8 @@
       ],
       "changed_file_count": 1,
       "is_on_origin_main": true,
-      "origin_head_when_synced": "8a87799c2070f2f384160f0496eb87b0908dc823",
-      "recorded_at": "2026-03-20T23:56:57+08:00"
+      "origin_head_when_synced": "78220195ef3a073598ec742a77bdb767f100f7fe",
+      "recorded_at": "2026-03-21T14:00:08+08:00"
     },
     {
       "commit_hash": "5027e1e3b845f4422fd5cd74a963706a22fcf786",
@@ -319,8 +357,8 @@
       ],
       "changed_file_count": 130,
       "is_on_origin_main": true,
-      "origin_head_when_synced": "8a87799c2070f2f384160f0496eb87b0908dc823",
-      "recorded_at": "2026-03-20T23:56:57+08:00"
+      "origin_head_when_synced": "78220195ef3a073598ec742a77bdb767f100f7fe",
+      "recorded_at": "2026-03-21T14:00:08+08:00"
     }
   ]
 }
