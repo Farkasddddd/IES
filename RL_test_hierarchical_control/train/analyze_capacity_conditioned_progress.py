@@ -49,16 +49,26 @@ def build_default_specialized_map() -> dict[str, str]:
     }
 
 
+def load_specialized_map(path: str | None) -> dict[str, str]:
+    if not path:
+        return build_default_specialized_map()
+    payload = load_json(path)
+    if "specialized_map" in payload:
+        return payload["specialized_map"]
+    return payload
+
+
 def main():
     parser = argparse.ArgumentParser(description="Analyze capacity-conditioned progress against specialized single-config policies.")
     parser.add_argument("--conditioned-in-pool", type=str, required=True)
     parser.add_argument("--conditioned-holdout", type=str, required=True)
+    parser.add_argument("--specialized-map-path", type=str, default=None)
     parser.add_argument("--run-tag", type=str, default="round1")
     args = parser.parse_args()
 
     in_pool = load_json(args.conditioned_in_pool)
     holdout = load_json(args.conditioned_holdout)
-    specialized_map = build_default_specialized_map()
+    specialized_map = load_specialized_map(args.specialized_map_path)
 
     by_label = {item["label"]: item for item in in_pool["configs"]}
     matched_rows = []
@@ -89,6 +99,7 @@ def main():
         "run_tag": args.run_tag,
         "conditioned_in_pool_path": args.conditioned_in_pool,
         "conditioned_holdout_path": args.conditioned_holdout,
+        "specialized_map_path": args.specialized_map_path,
         "in_pool_avg_methanol_kg": in_pool["avg_annual_methanol_kg"],
         "holdout_avg_methanol_kg": holdout["avg_annual_methanol_kg"],
         "in_pool_avg_lcom": in_pool["avg_lcom_yuan_per_kg"],

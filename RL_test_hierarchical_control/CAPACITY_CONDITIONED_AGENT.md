@@ -214,6 +214,10 @@ E:\anaconda\python.exe RL_test_hierarchical_control\train\select_capacity_condit
 - 与专用策略的差距
 - 全年零越界约束
 
+关于当前阶段已经形成的正式年度结论，见：
+
+- `RL_test_hierarchical_control/STAGE4_CONDITIONED_FINAL_CONCLUSION.md`
+
 ## 当前阶段结论
 
 统一策略已经从“只有脚手架”推进到了“有局部泛化信号、且可稳定零越界运行”的状态，但还不能宣布完成阶段 4。

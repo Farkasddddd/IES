@@ -80,7 +80,7 @@ def main():
     per_config_outputs: list[dict] = []
 
     for label, config in zip(labels, configs):
-        raw_env, env = build_stage1_env(
+        _, env = build_stage1_env(
             pv_data_path=os.path.join(DATA_DIR, "pvwatts_hourly_shanghai.csv"),
             surrogate_path=os.path.join(DATA_DIR, "methanol_mlp_model.pth"),
             config=config,

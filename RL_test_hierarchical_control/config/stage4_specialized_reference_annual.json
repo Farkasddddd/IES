@@ -1,0 +1,7 @@
+{
+  "specialized_map": {
+    "baseline": "C:\\Users\\Farkas\\Desktop\\IES\\RL_test_hierarchical_control\\results\\stage1\\evaluations\\stage1_eval_shanghai_baseline_20260320_201736\\annual_eval_summary.json",
+    "h2_55": "C:\\Users\\Farkas\\Desktop\\IES\\RL_test_hierarchical_control\\results\\stage1\\evaluations\\stage1_eval_stage2_final_r_h2_55_20260320_215117\\annual_eval_summary.json",
+    "bat_e_35": "C:\\Users\\Farkas\\Desktop\\IES\\RL_test_hierarchical_control\\results\\stage1\\evaluations\\stage1_eval_stage2_final_r_bat_e_35_20260320_220826\\annual_eval_summary.json"
+  }
+}
