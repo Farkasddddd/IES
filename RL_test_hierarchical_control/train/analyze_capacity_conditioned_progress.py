@@ -131,8 +131,8 @@ def main():
             [
                 f"### {row['label']}",
                 "",
-                f"- 统一策略甲醇: {row['conditioned_methanol_kg']:.2f} kg",
-                f"- 专用策略甲醇: {row['specialized_methanol_kg']:.2f} kg",
+                f"- 统一策略甲醇产量: {row['conditioned_methanol_kg']:.2f} kg",
+                f"- 专用策略甲醇产量: {row['specialized_methanol_kg']:.2f} kg",
                 f"- 甲醇差值: {row['methanol_gap_kg']:.2f} kg",
                 f"- 统一策略 LCOM: {row['conditioned_lcom']:.4f}",
                 f"- 专用策略 LCOM: {row['specialized_lcom']:.4f}",

@@ -68,6 +68,12 @@ E:\anaconda\python.exe RL_test_hierarchical_control\train\evaluate_capacity_cond
 E:\anaconda\python.exe RL_test_hierarchical_control\train\analyze_capacity_conditioned_progress.py --conditioned-in-pool <训练池汇总json> --conditioned-holdout <留出池汇总json> --run-tag <标签>
 ```
 
+做统一策略模型选择：
+
+```powershell
+E:\anaconda\python.exe RL_test_hierarchical_control\train\select_capacity_conditioned_model.py --candidate "<标签>=<模型路径>" --candidate "<标签>=<模型路径>"
+```
+
 ## 当前验证记录
 
 ### 1. smoke 冒烟链路
@@ -153,6 +159,40 @@ E:\anaconda\python.exe RL_test_hierarchical_control\train\analyze_capacity_condi
 - `baseline`：统一策略仍落后于专用策略
 - `h2_55`：统一策略仍落后，但差距没有消失
 - `bat_e_35`：统一策略已经非常接近专用策略
+
+### 5. 当前阶段的模型选择结果
+
+为了避免只凭最后一次训练结果选模型，当前已经加入统一策略模型选择流程，会同时参考：
+
+- 训练池均值
+- 留出池均值
+- 泛化差值
+- 与单配置专用策略的平均差距
+- 全部约束越界是否为 0
+
+在第一轮 7 个候选模型的比较中，当前最优候选不是 `pilot60k_final`，而是：
+
+- `pilot60k_ckpt55k`
+
+对应结果目录：
+
+- `RL_test_hierarchical_control/results/stage4_conditioned/selection/stage4_model_selection_round1_7candidates_20260321_135627/`
+
+当前这个候选的关键表现是：
+
+- 训练池平均甲醇：`2841.80 kg`
+- 留出池平均甲醇：`2833.67 kg`
+- 训练池平均 LCOM：`411.3456`
+- 留出池平均 LCOM：`410.1271`
+- 平均专用策略甲醇差值：`-56.77 kg`
+- 平均专用策略 LCOM 差值：`+7.7340`
+- `H2/CO2/SOC` 越界仍全部为 `0`
+
+这说明当前阶段已经可以明确一条工程结论：
+
+- 统一策略不应只按“训练步数越大越好”来选
+- 对 conditioned policy 来说，中间 checkpoint 可能优于最终 checkpoint
+- 后续阶段 4 的继续训练与年度验证，应优先基于 `pilot60k_ckpt55k` 往前推进
 
 ## 当前判断
 
