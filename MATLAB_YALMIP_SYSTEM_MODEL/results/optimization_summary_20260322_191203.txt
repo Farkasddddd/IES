@@ -1,0 +1,9 @@
+Objective mode: max_profit
+Annual methanol (kg): 2641.025280
+Annual grid (kWh): 4.450335
+Annual curtailment (kWh): 6897.454448
+Annualized CAPEX (yuan): 477971.993469
+Grid cost (yuan): 2.892718
+Curtailment penalty (yuan): 0.000000
+Methanol revenue (yuan): 15846.151683
+Objective value: -6676.672789

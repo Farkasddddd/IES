@@ -52,3 +52,6 @@ RL_test_hierarchical_control/results/stage1/scans/
 
 # Generated local metadata
 *.log
+
+# Local third-party dependencies
+external/
